@@ -13,20 +13,26 @@ public class ListFileGenerator {
 		File dir = new File(datapath);  //path of the dataset
 
 		File listFile = new File(outputPath);
+		//System.out.println(dir.exists());
 		FileOutputStream out = new FileOutputStream(outputPath);
 		Stack<File> s = new Stack<File>();
 		int count = 0;
 		s.push(dir);
+	
 		while (!s.isEmpty()){
 			File f = s.pop();
+			//System.out.println(f.exists());
+			
 			if(f.exists()){
 				if(f.isDirectory()){
 					File[] subDir = f.listFiles();
 					for(int i = 0;i<subDir.length;i++){
 						s.push(subDir[i]);
 					}
+					
 				} else {
-					if(!Utils.getExtension(f).equals("sift")) {
+					System.out.println(f.getAbsolutePath());
+					if(!Utils.getExtension(f).equals("sift")&&!Utils.getExtension(f).equals("txt")) {
 						String path = f.getAbsolutePath()+"\n";
 						byte[] data = path.getBytes();
 						out.write(data);
@@ -39,11 +45,12 @@ public class ListFileGenerator {
 		System.out.println("List File Generation Finished.");
 		System.out.println("Record "+count+" files at "+outputPath);
 	}
+	
 	public static void main(String[] args){
 		
-		String datapath = "E:\\study\\study2015sem1\\CS2108\\Assignment1\\ImageData\\train\\data";
+		String datapath = "/Users/svarshney/Desktop/Semester 1/cs2108/Assignment1/ImageData/test/data";
 		
-		String outputPath = "E:\\study\\study2015sem1\\CS2108\\Assignment1\\ImageData\\train\\listFile.txt";
+		String outputPath = "/Users/svarshney/Desktop/Semester 1/cs2108/Assignment1/ImageData/test/listFile-test.txt";
 		try{
 			generateListFile(datapath,outputPath);
 		} catch (IOException e){

@@ -1,13 +1,15 @@
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
 public class ColorHist {
 	int dim = 64;
-
+	private static final String nameFile = "listFile.txt";
 	
 	public BufferedImage[] search(String datasetpath, BufferedImage bufferedimage, int resultsize) throws IOException{
     	double[] hist = getHist(bufferedimage);
@@ -48,6 +50,41 @@ public class ColorHist {
 		}
 		
     	return imgs;
+    }
+	
+    public datafile[] search(String datapath){
+    	String[] nameList = new String[1250];
+    	try (BufferedReader br = new BufferedReader(new FileReader(nameFile))) {
+		    String line;
+		    int count = 0;
+		    while ((line = br.readLine()) != null) {
+		    	nameList[count] = line;
+		    	count++;
+		    }
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+    	double[] sim = new double[1250];
+    	int index = 0;
+    	try{
+    		BufferedImage testImage = ImageIO.read(new File(datapath)); 
+    		double[] testHist = getHist(testImage);
+    		for(index = 0;index<1250;index++){
+    			//System.out.println(nameList[index]);
+    			BufferedImage img = ImageIO.read(new File(nameList[index]));
+    			double[] tempHist = getHist(img);
+    			sim[index] = computeSimilarity(testHist, tempHist);
+    		}
+    	} catch (Exception e){
+    		System.out.println(nameList[index]);
+    		e.printStackTrace();
+    		
+    	}
+    	datafile[] result = new datafile[1250];
+    	for(int i = 0; i<1250;i++){
+    		result[i] = new datafile(nameList[i],sim[i]);
+    	}
+    	return result;
     }
     
     public double computeSimilarity(double [] hist1, double [] hist2) {
